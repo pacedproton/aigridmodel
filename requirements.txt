@@ -11,7 +11,7 @@ cvxpy>=1.3
 statsmodels>=0.13
 scikit-learn>=1.3
 
-# Optional visualization
+# Data science and visualization
 pandas
 matplotlib
 networkx
