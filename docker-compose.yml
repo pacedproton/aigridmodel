@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "5001:5001"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=false
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    networks:
+      - ai-grid-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=http://backend:5001
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - ai-grid-network
+
+networks:
+  ai-grid-network:
+    driver: bridge
+
+volumes:
+  data:
+  models:

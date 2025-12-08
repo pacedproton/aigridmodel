@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-grid-demo"
+version = "0.1.0"
+description = "AI-powered Grid Modeling Demonstrator"
+authors = [{name = "Demo User"}]
+dependencies = [
+    "torch>=2.0",
+    "torch-geometric",
+    "pandapower",
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "networkx",
+    "scipy",
+    "pytest",
+    "click",
+    "pyyaml",
+]
+
+[project.scripts]
+ai-grid-demo = "ai_grid_demo.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+

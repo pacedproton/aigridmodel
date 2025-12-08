@@ -1,0 +1,82 @@
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Data and models (can be large)
+data/
+models/
+*.npz
+*.pt
+*.pth
+
+# Node modules
+frontend/node_modules/
+frontend/build/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+test_latex_rendering.html
+test_report_*.txt
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Coverage reports
+coverage/
+*.cover
+*.coverage
+.coverage.*
+htmlcov/
+
+# IDE specific
+.cursor/
+.vscode/settings.json
+.idea/workspace.xml
+

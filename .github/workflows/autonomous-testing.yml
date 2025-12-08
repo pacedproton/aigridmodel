@@ -1,0 +1,234 @@
+name: 🤖 Autonomous Testing Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run comprehensive tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Type of tests to run'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - quick
+          - performance
+
+jobs:
+  autonomous-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9, '3.10', '3.11']
+
+    services:
+      # Start services for testing
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: 📦 Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-${{ matrix.python-version }}-
+          ${{ runner.os }}-pip-
+
+    - name: 📦 Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: 🧪 Install test dependencies
+      run: |
+        pip install pytest pytest-cov pytest-xdist
+        pip install requests flask-testing
+
+    - name: 🔧 Set up Node.js for frontend
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: 📦 Install frontend dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: 🏗️ Build frontend
+      run: |
+        cd frontend
+        npm run build
+
+    - name: 🧪 Run autonomous test suite
+      run: |
+        if [ "${{ github.event.inputs.test_type }}" == "quick" ]; then
+          python run_comprehensive_tests.py
+        elif [ "${{ github.event.inputs.test_type }}" == "performance" ]; then
+          python -m pytest tests/performance/ -v --tb=short
+        else
+          python run_autonomous_tests.py
+        fi
+      env:
+        CI: true
+        TEST_ENV: github_actions
+
+    - name: 📊 Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-py${{ matrix.python-version }}
+        path: |
+          test_report_*.txt
+          *.log
+          test_results.json
+
+    - name: 📈 Generate test report
+      if: always()
+      run: |
+        python -c "
+        import json
+        import os
+        from pathlib import Path
+
+        # Find test report
+        reports = list(Path('.').glob('test_report_*.txt'))
+        if reports:
+            with open(max(reports, key=os.path.getctime), 'r') as f:
+                content = f.read()
+                print('## Test Report')
+                print('```')
+                print(content)
+                print('```')
+        "
+
+    - name: 📧 Send notification on failure
+      if: failure()
+      run: |
+        echo "Test suite failed - check the logs above for details"
+        # In a real setup, you'd integrate with Slack, email, etc.
+
+    - name: 🧹 Clean up
+      if: always()
+      run: |
+        # Clean up any background processes
+        pkill -f "python.*start_api.py" || true
+        pkill -f "npm.*start" || true
+
+  performance-tests:
+    runs-on: ubuntu-latest
+    needs: autonomous-tests
+    if: github.event.schedule == '0 2 * * *' || github.event.inputs.test_type == 'performance'
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: 📦 Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install locust
+
+    - name: 🚀 Start services for performance testing
+      run: |
+        python scripts/start_api.py &
+        sleep 10
+
+    - name: 📈 Run performance tests
+      run: |
+        # Create simple Locust test file
+        cat > locustfile.py << 'EOF'
+        from locust import HttpUser, task, between
+
+        class APITester(HttpUser):
+            wait_time = between(1, 3)
+
+            @task(3)
+            def test_forecasting(self):
+                self.client.post("/api/advanced/forecasting")
+
+            @task(2)
+            def test_health(self):
+                self.client.get("/api/health")
+
+            @task(1)
+            def test_data_generation(self):
+                self.client.post("/api/generate-data", json={"n_steps": 50})
+        EOF
+
+        # Run Locust performance test
+        locust --headless --users 10 --spawn-rate 2 --run-time 30s --host http://localhost:5001
+
+    - name: 📊 Upload performance results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-results
+        path: |
+          locust_stats_*.csv
+          locust_stats_history.csv
+
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: [autonomous-tests, performance-tests]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - name: 🚀 Deploy to staging
+      run: |
+        echo "Deployment to staging would happen here"
+        echo "This could integrate with:"
+        echo "- AWS/GCP/Azure deployment"
+        echo "- Docker container registry"
+        echo "- Kubernetes cluster"
+        echo "- Serverless functions"
+
+    - name: ✅ Post-deployment tests
+      run: |
+        echo "Run smoke tests against staging environment"
+        echo "Validate that all endpoints are working"
+        echo "Check data integrity and performance"
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [autonomous-tests, performance-tests, deploy-staging]
+    if: always()
+
+    steps:
+    - name: 📢 Send notifications
+      run: |
+        if [ "${{ needs.autonomous-tests.result }}" == "success" ] && [ "${{ needs.performance-tests.result }}" == "success" ]; then
+          echo "✅ All tests passed successfully!"
+          # Send success notification to Slack/Teams/etc.
+        else
+          echo "❌ Some tests failed - check the detailed logs above"
+          # Send failure notification with details
+        fi

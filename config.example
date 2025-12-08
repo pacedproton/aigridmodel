@@ -1,0 +1,32 @@
+# AI Grid Model Environment Configuration
+
+# Frontend Configuration
+# API URL for the React frontend to connect to the backend
+REACT_APP_API_URL=http://localhost:5001
+
+# Backend Configuration
+# Flask environment (development/production)
+FLASK_ENV=development
+FLASK_DEBUG=true
+
+# Server Configuration
+# Host and port for the Flask backend
+HOST=0.0.0.0
+PORT=5001
+
+# Data and Model Paths
+# Directory for storing generated data
+DATA_DIR=data
+# Directory for storing trained models
+MODEL_DIR=models
+
+# Training Configuration
+# Default number of training epochs
+DEFAULT_EPOCHS=5
+# Batch size for training
+BATCH_SIZE=32
+
+# For production deployment, set:
+# REACT_APP_API_URL=https://your-api-domain.com
+# FLASK_ENV=production
+# FLASK_DEBUG=false
