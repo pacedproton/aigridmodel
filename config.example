@@ -27,6 +27,8 @@ DEFAULT_EPOCHS=5
 BATCH_SIZE=32
 
 # For production deployment, set:
-# REACT_APP_API_URL=https://your-api-domain.com
+# For cloudflared deployment (same domain):
+# REACT_APP_API_URL=https://griddemo.fullstackbuilder.de
+# Or leave empty to use relative URLs with nginx proxy
 # FLASK_ENV=production
 # FLASK_DEBUG=false
