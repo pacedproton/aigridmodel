@@ -56,3 +56,4 @@ print("1. Make sure you're in the project root directory")
 print("2. Try: PYTHONPATH=. python scripts/start_api.py")
 print("3. Or: export PYTHONPATH=. && python scripts/start_api.py")
 print("4. Check if virtual environment is activated")
+

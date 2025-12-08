@@ -1,14 +1,34 @@
-# Use the official nginx image as base
-FROM nginx:alpine
+# Use Node.js for production server with API proxying
+FROM node:18-alpine
 
-# Copy the built React app to nginx html directory
-COPY build/ /usr/share/nginx/html
+# Set working directory
+WORKDIR /app
 
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy package files
+COPY package*.json ./
 
-# Expose port 80
-EXPOSE 80
+# Install dependencies
+RUN npm ci --only=production
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Copy built React app
+COPY build/ ./build/
+
+# Copy server files
+COPY server.js ./
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+# Change ownership
+RUN chown -R nextjs:nodejs /app
+USER nextjs
+
+# Expose port 60000
+EXPOSE 60000
+
+# Set environment variable for port
+ENV PORT=60000
+
+# Start the server
+CMD ["node", "server.js"]

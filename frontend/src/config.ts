@@ -1,6 +1,6 @@
 // API Configuration
-// For production, use relative URLs so nginx can proxy to backend
-const API_BASE_URL = process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5001');
+// Use relative URLs - all API calls will be proxied through the frontend server
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 
 export const config = {
   api: {

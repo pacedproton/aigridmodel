@@ -17,3 +17,4 @@ os.environ.setdefault('FLASK_ENV', 'production')
 
 # Run as module
 os.system("python -m ai_grid_demo.api")
+

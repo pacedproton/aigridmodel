@@ -18,6 +18,7 @@
     "@types/react-dom": "^19.2.3",
     "axios": "^1.13.2",
     "better-react-mathjax": "^2.4.0-beta-1",
+    "express": "^5.2.1",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "react-router-dom": "^7.10.1",
@@ -31,7 +32,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start-backend": "cd .. && source venv/bin/activate && python scripts/start_api.py"
+    "start-backend": "cd .. && source venv/bin/activate && python scripts/start_api.py",
+    "serve": "node server.js"
   },
   "eslintConfig": {
     "extends": [
@@ -50,5 +52,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "http-proxy-middleware": "^3.0.5"
   }
 }

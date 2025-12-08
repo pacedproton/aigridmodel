@@ -21,33 +21,48 @@ A comprehensive AI-powered platform demonstrating advanced machine learning appl
 - **Node.js 18+**
 - **Docker & Docker Compose** (recommended)
 
-### Option 1: Docker Deployment (Recommended)
+### Single-Port Architecture
+
+This application uses a **single-port architecture** where everything runs through port 60000:
+- Frontend serves static files and handles routing
+- API requests are proxied to the backend automatically
+- Only **one port needs to be forwarded** for remote access
+
+### Option 1: Single-Port Deployment (Recommended)
 
 ```bash
 # Clone the repository
 git clone <repository-url>
 cd ai-grid-demo
 
+# Setup and start everything on port 60000
+./start_single_port.sh
+```
+
+Access the application at: **http://localhost:60000**
+
+### Option 2: Docker Deployment
+
+```bash
 # Deploy with Docker Compose
 ./deploy.sh
 ```
 
-Access the application at:
-
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:5001
-
-### Option 2: Local Development
+### Option 3: Manual Development Setup
 
 ```bash
-# Backend setup
+# Backend setup (port 5001 - internal)
 cd ai-grid-demo
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 python scripts/start_api.py &
 
-# Frontend setup (new terminal)
+# Frontend setup (port 60000 - public with API proxy)
+cd frontend
+npm install
+npm run serve
+```
 cd frontend
 npm install
 npm start
@@ -174,9 +189,9 @@ docker-compose down
 docker build -f Dockerfile.backend -t ai-grid-backend .
 docker build -f frontend/Dockerfile -t ai-grid-frontend .
 
-# Run services
-docker run -d -p 5001:5001 --name backend ai-grid-backend
-docker run -d -p 3000:80 --name frontend ai-grid-frontend
+# Run services (single port architecture)
+docker run -d --name backend ai-grid-backend
+docker run -d -p 60000:60000 --link backend --name frontend ai-grid-frontend
 ```
 
 ### Cloud Deployment Options
