@@ -7,13 +7,13 @@ import numpy as np
 import os
 from datetime import datetime
 import torch
-from ai_grid_demo.config import TrainingConfig, GridConfig
-from ai_grid_demo.data.simulator import simulate_grid_timeseries
-from ai_grid_demo.data.grid_generator import build_ieee_14_grid
-from ai_grid_demo.models.simple_mlp import SimpleMLP
-from ai_grid_demo.training.train_simple import train_simple
-from ai_grid_demo.viz.plots import plot_time_series
-from ai_grid_demo.classical_models import (
+from .config import TrainingConfig, GridConfig
+from .data.simulator import simulate_grid_timeseries
+from .data.grid_generator import build_ieee_14_grid
+from .models.simple_mlp import SimpleMLP
+from .training.train_simple import train_simple
+from .viz.plots import plot_time_series
+from .classical_models import (
     ClassicalModelsComparison,
     ClassicalLoadForecaster,
     DCStateEstimator,
@@ -22,7 +22,7 @@ from ai_grid_demo.classical_models import (
     PCALinearStateSpaceModel,
     ChiSquareAnomalyDetector
 )
-from ai_grid_demo.advanced_models import (
+from .advanced_models import (
     BayesianStructuralTimeSeries,
     ExtendedKalmanFilter,
     MCMCLogisticRegression,
