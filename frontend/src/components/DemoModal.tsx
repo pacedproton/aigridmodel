@@ -109,7 +109,7 @@ const DemoModal: React.FC<DemoModalProps> = ({ open, onClose }) => {
       "DemoModal useEffect triggered, open:",
       open,
       "networkPlot exists:",
-      !!networkPlot
+      !!networkPlot,
     );
     if (open && !networkPlot) {
       console.log("Calling fetchNetworkPlot...");
@@ -306,11 +306,11 @@ const DemoModal: React.FC<DemoModalProps> = ({ open, onClose }) => {
                     console.error("Image failed to load:", e);
                     console.error(
                       "Image src starts with:",
-                      networkPlot.plot.substring(0, 50)
+                      networkPlot.plot.substring(0, 50),
                     );
                     console.error(
                       "Image src total length:",
-                      networkPlot.plot.length
+                      networkPlot.plot.length,
                     );
                   }}
                 />
@@ -403,10 +403,9 @@ const DemoModal: React.FC<DemoModalProps> = ({ open, onClose }) => {
           }}
         >
           <Typography variant="body2" sx={{ color: "success.contrastText" }}>
-            <strong>All functionality is fully implemented:</strong> You can
-            train real ML models, see convergence curves, and interact with all
-            use case demonstrations. The system uses synthetic data generated
-            via Pandapower for realistic grid simulation.
+            You can train real ML models, see convergence curves, and interact
+            with all use case demonstrations. The system uses synthetic data
+            generated via Pandapower for realistic grid simulation.
           </Typography>
         </Box>
       </DialogContent>

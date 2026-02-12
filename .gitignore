@@ -26,8 +26,6 @@ wheels/
 *.egg
 
 # Data and models (can be large)
-data/
-models/
 *.npz
 *.pt
 *.pth
